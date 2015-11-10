@@ -295,76 +295,94 @@ def isBoardFull(board):
 
 print('Welcome to Tic Tac Toe!')
 
-while True:
-    # Reset the board
-    theBoard = [' '] * 10
+trials=0
+Maxtrials=30
+jogadas=0
+Maxjogadas=1000
+
+#resultado[defaultdict(int)]
+
+#resultado[[trial][jogadas][venceu]
+
+while trials<Maxtrials:
+    
     resetQ()
-    playerLetter, computerLetter = inputPlayerLetter()
-    turn = whoGoesFirst()
-    print('The ' + turn + ' will go first.')
-    print ('Your Letter ' + playerLetter + '')
-    gameIsPlaying = True
 
-    while gameIsPlaying:
-        if turn == 'player':
-            # Player's turn.
-            #drawBoard(theBoard)
-            #move = getPlayerMove(theBoard)
-            #makeMove(theBoard, playerLetter, move)
-                                                
-            gravaQ(QL)
-			######## QL ###########
-			# 1-Determinar o estado
-			# 2 - escolher acao
-			# 3 - aplicar acao
-			# 4 - receber retorno
-			# Calcular QL
-            
-            vstateinicial=qlstate(theBoard,State)
-            #print EstadoInicial
-            acao=chooseaction(vstateinicial)
-            #print acao
-            applyaction(theBoard,acao)
-            vstatefinal=qlstate(theBoard,State)
-            #print    vstateinicial
-            #print    vstatefinal
-
-            if isWinner(theBoard, playerLetter):
-                reward=100
-                QL_update(vstateinicial,vstatefinal,reward,acao)
-                drawBoard(theBoard)
-                print('Hooray! You have won the game!')
-                gameIsPlaying = False
-            else:
-                if isBoardFull(theBoard):
+    while True:
+        # Reset the board
+        theBoard = [' '] * 10
+        playerLetter, computerLetter = inputPlayerLetter()
+        turn = whoGoesFirst()
+        print('The ' + turn + ' will go first.')
+        print ('Your Letter ' + playerLetter + '')
+        gameIsPlaying = True
+    
+        while gameIsPlaying:
+            if turn == 'player':
+                # Player's turn.
+                #drawBoard(theBoard)
+                #move = getPlayerMove(theBoard)
+                #makeMove(theBoard, playerLetter, move)
+                                                    
+                #gravaQ(QL)
+    			######## QL ###########
+    			# 1-Determinar o estado
+    			# 2 - escolher acao
+    			# 3 - aplicar acao
+    			# 4 - receber retorno
+    			# Calcular QL
+                
+                vstateinicial=qlstate(theBoard,State)
+                #print EstadoInicial
+                acao=chooseaction(vstateinicial)
+                #print acao
+                applyaction(theBoard,acao)
+                vstatefinal=qlstate(theBoard,State)
+                #print    vstateinicial
+                #print    vstatefinal
+    
+                if isWinner(theBoard, playerLetter):
                     reward=100
                     QL_update(vstateinicial,vstatefinal,reward,acao)
                     drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
+                    print('Hooray! You have won the game!')
+                    gameIsPlaying = False
                 else:
-                    turn = 'computer'
-
-        else:
-            # Computer's turn.
-            move = getComputerMove(theBoard, computerLetter)
-            makeMove(theBoard, computerLetter, move)
-
-            if isWinner(theBoard, computerLetter):
-                #drawBoard(theBoard)
-                reward=-100
-                QL_update(vstateinicial,vstatefinal,reward,acao)
-                print('The computer has beaten you! You lose.')
-                gameIsPlaying = False
+                    if isBoardFull(theBoard):
+                        reward=100
+                        QL_update(vstateinicial,vstatefinal,reward,acao)
+                        drawBoard(theBoard)
+                        print('The game is a tie!')
+                        gameIsPlaying = False
+                        #break
+                    else:
+                        turn = 'computer'
+    
             else:
-                if isBoardFull(theBoard):
+                # Computer's turn.
+                move = getComputerMove(theBoard, computerLetter)
+                makeMove(theBoard, computerLetter, move)
+    
+                if isWinner(theBoard, computerLetter):
+                    #drawBoard(theBoard)
                     reward=-100
                     QL_update(vstateinicial,vstatefinal,reward,acao)
-                    #drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
+                    print('The computer has beaten you! You lose.')
+                    gameIsPlaying = False
                 else:
-                    turn = 'player'
+                    if isBoardFull(theBoard):
+                        reward=-100
+                        QL_update(vstateinicial,vstatefinal,reward,acao)
+                        #drawBoard(theBoard)
+                        print('The game is a tie!')
+                        gameIsPlaying = False
+                    else:
+                        turn = 'player'
 
-    if not playAgain():
-        break
+        if not playAgain():
+            break
+        elif jogadas>MAXjogadas:
+            break
+        else:
+            jogadas=jogadas+1
+            
