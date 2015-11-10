@@ -10,7 +10,7 @@ from collections import defaultdict
 epsilon = 0.1
 alpha = 0.2
 gamma = 0.9
-actions = 9
+actions = 10
 reward = -1
 
 State=defaultdict(int)
@@ -22,30 +22,32 @@ QL = defaultdict(int)
 #### QL funcoes ############################
 
 def qlstate(board,state):
-    for i in range (1,9):
+    for i in range (0,9):
+        #print board
         if board[i]=='X':
             state[i]=1
         elif board[i]=='O':
             state[i]=2
         else:
-            state[i]=0	
-
+            state[i]=0
+            
+    #print State
     return state
     #print State
     
 def resetQ():
-    for l1 in range(3):
-        for l2 in range(3):
-            for l3 in range(3):
-                for l4 in range(3):
-                    for l5 in range(3):
-                        for l6 in range(3):
-                            for l7 in range(3):
-                                for l8 in range(3):
-                                    for l9 in range(3):
-                                        for l10 in range(10):
-                                            QL[l1,l2,l3,l4,l5,l6,l7,l8,l9,l10] = 0
-    print "Tabela Apagada"
+    for l1 in range(2):
+        for l2 in range(2):
+            for l3 in range(2):
+                for l4 in range(2):
+                    for l5 in range(2):
+                        for l6 in range(2):
+                            for l7 in range(2):
+                                for l8 in range(2):
+                                    for l9 in range(2):
+                                        for l10 in range(1,10):
+                                            QL[l1,l2,l3,l4,l5,l6,l7,l8,l9,l10] = random.uniform(0,2)
+    print "Tabela Resetada"
         
         
 def getQ(state, action):
@@ -59,7 +61,7 @@ def chooseaction(state):
         #print QL
 
         if (random.random() < epsilon):
-            ac=int(random.uniform(1,actions))
+            ac=int(random.uniform(1,9))
         else:
             for a in range(actions):
                 vQ = QL[state[0],state[1],state[2],state[3],state[4],state[5],state[6],state[7],state[8],a]
@@ -72,7 +74,7 @@ def chooseaction(state):
 def chooseargmax(state):
 	temp = -100
 	
-	for a in range(actions):
+	for a in range(1,9):
 	    vQ=QL[state[0],state[1],state[2],state[3],state[4],state[5],state[6],state[7],state[8],a]
             if vQ > temp:
                 ac=a
@@ -103,18 +105,45 @@ def applyaction (bd,action):
     
 ########### Gravacao de Dados ################################################
 
-def grava(numero, valor ):
-	print "Gravando tabela"
-	s1=str(numero)
-	s2=str(valor)
-	adicionar = open("Qarquivo.txt","a")
-	adicionar.write(s1)
-	adicionar.write(' ')
-	adicionar.write(s2)
-	adicionar.write('\n')
-	adicionar.close()
+def gravaQ(Qbo):
+    print "Gravando Tabela Q"
+    teste = 0
+    adicionar = open("Qtabela.txt","a")
+    for l1 in range(2):
+        for l2 in range(2):
+            for l3 in range(2):
+                for l4 in range(2):
+                    for l5 in range(2):
+                        for l6 in range(2):
+                            for l7 in range(2):
+                                for l8 in range(2):
+                                    for l9 in range(2):
+                                            s1=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,1])
+                                            s2=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,2])
+                                            s3=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,3])
+                                            s4=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,4])
+                                            s5=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,5])
+                                            s6=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,6])
+                                            s7=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,7])
+                                            s8=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,8])
+                                            s9=str(Qbo[l1,l2,l3,l4,l5,l6,l7,l8,l9,9])
+                                            adicionar.write(s1)
+                                            adicionar.write(s2)
+                                            adicionar.write(s3)
+                                            adicionar.write(s4)
+                                            adicionar.write(s5)
+                                            adicionar.write(s6)
+                                            adicionar.write(s7)
+                                            adicionar.write(s8)
+                                            adicionar.write(s9)
+                                            adicionar.write('\n')
+    
     
 
+        
+    adicionar.close()
+    
+    
 ################################################################################
 	
 	
@@ -283,7 +312,7 @@ while True:
             #move = getPlayerMove(theBoard)
             #makeMove(theBoard, playerLetter, move)
                                                 
-
+            gravaQ(QL)
 			######## QL ###########
 			# 1-Determinar o estado
 			# 2 - escolher acao
@@ -297,23 +326,19 @@ while True:
             #print acao
             applyaction(theBoard,acao)
             vstatefinal=qlstate(theBoard,State)
-            
-            if isWinner(theBoard, playerLetter):
-                reward=1000
-            elif isBoardFull(theBoard):
-                reward=100
-            else:
-                reward=-10
-                
-            QL_update(vstateinicial,vstatefinal,reward,acao)
-                
+            #print    vstateinicial
+            #print    vstatefinal
 
             if isWinner(theBoard, playerLetter):
+                reward=100
+                QL_update(vstateinicial,vstatefinal,reward,acao)
                 drawBoard(theBoard)
                 print('Hooray! You have won the game!')
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
+                    reward=100
+                    QL_update(vstateinicial,vstatefinal,reward,acao)
                     drawBoard(theBoard)
                     print('The game is a tie!')
                     break
@@ -327,10 +352,14 @@ while True:
 
             if isWinner(theBoard, computerLetter):
                 #drawBoard(theBoard)
+                reward=-100
+                QL_update(vstateinicial,vstatefinal,reward,acao)
                 print('The computer has beaten you! You lose.')
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
+                    reward=-100
+                    QL_update(vstateinicial,vstatefinal,reward,acao)
                     #drawBoard(theBoard)
                     print('The game is a tie!')
                     break
