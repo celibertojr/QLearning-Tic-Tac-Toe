@@ -6,6 +6,8 @@ from sys import *
 from collections import defaultdict
 
 #QL parametros
+Maxtrials=30 # numero m?ximos de tentativas (usado para fazer media)
+Maxjogadas=1000 # numero maxima de jogadas.
 
 epsilon = 0.1
 alpha = 0.2
@@ -296,9 +298,8 @@ def isBoardFull(board):
 print('Welcome to Tic Tac Toe!')
 
 trials=0
-Maxtrials=30
 jogadas=0
-Maxjogadas=1000
+
 
 #resultado[defaultdict(int)]
 
