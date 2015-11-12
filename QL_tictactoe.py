@@ -6,8 +6,7 @@ from sys import *
 from collections import defaultdict
 
 #QL parametros
-Maxtrials=30 # numero maximos de tentativas
-Maxjogadas=1000 # numero maxima de jogadas.
+
 
 epsilon = 0.1
 alpha = 0.2
@@ -58,7 +57,6 @@ def getQ(state, action):
 
 def chooseaction(state):	
 	temp=-1000
-
         if (random.random() < epsilon):
             ac=int(random.uniform(1,9))
         else:
@@ -147,9 +145,10 @@ def Resultado(trial,jogada):
     s1=str(trial)
     s2=str(jogada)
     arquivo.write(s1)
+    arquivo.write(' ')
     arquivo.write(s2)
     arquivo.write('\n')
-    adicionar.close()
+    arquivo.close()
     
     
 ################################################################################
@@ -233,7 +232,6 @@ def isSpaceFree(board, move):
 def getPlayerMove(board):
     # Let the player type in his move.
     move = ' '
-    
     while move not in '1 2 3 4 5 6 7 8 9'.split() or not isSpaceFree(board, int(move)):
         print('What is your next move? (1-9)')
         #move = input()
@@ -305,15 +303,11 @@ print('Welcome to Tic Tac Toe!')
 
 trials=0
 jogadas=0
+ganhou=0
 
+resetQ()
 
-#resultado[defaultdict(int)]
-
-#resultado[[trial][jogadas][venceu]
-
-while trials<Maxtrials:
-    
-    resetQ()
+while trials<100:  
 
     while True:
         # Reset the board
@@ -341,14 +335,20 @@ while trials<Maxtrials:
                 
                 vstateinicial=qlstate(theBoard,State)
                 #print EstadoInicial
-                acao=chooseaction(vstateinicial)
-                #print acao
+                
+                while True:                                 #so deixa escolher acao que possa realizar
+                    acao=chooseaction(vstateinicial)
+                    if isSpaceFree(theBoard, acao):
+                        break
+                
                 applyaction(theBoard,acao)
+                    
                 vstatefinal=qlstate(theBoard,State)
                 #print    vstateinicial
                 #print    vstatefinal
     
                 if isWinner(theBoard, playerLetter):
+                    ganhou=ganhou+1
                     reward=100 #ganhou ganha 100
                     QL_update(vstateinicial,vstatefinal,reward,acao)
                     drawBoard(theBoard)
@@ -386,11 +386,17 @@ while trials<Maxtrials:
                     else:
                         turn = 'player'
 
+        s = 'Jogo atual ' + str(jogadas)
+        print s
+        
         if not playAgain():
             break
-        elif jogadas>MAXjogadas:
-            trials=trials+1
-            jogadas=0
+        if jogadas>1000:                       # vai jogar o jogo 10000 vezes (pode mudar)
+            
+            Resultado(trials,ganhou)            #salva tabela jogos/vezes ganhou
+            ganhou=0                            #zera a soma dos ganhos
+            jogadas=0                           # zera o numero de jogadas
+            trials=trials+1                     #proximo jogo
             break
         else:
             jogadas=jogadas+1
