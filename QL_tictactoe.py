@@ -1,4 +1,4 @@
-# Tic Tac Toe
+# QLearning Tic Tac Toe
 
 import random
 from math import *
@@ -6,13 +6,13 @@ from sys import *
 from collections import defaultdict
 
 #QL parametros
-Maxtrials=30 # numero m?ximos de tentativas (usado para fazer media)
+Maxtrials=30 # numero maximos de tentativas
 Maxjogadas=1000 # numero maxima de jogadas.
 
 epsilon = 0.1
 alpha = 0.2
 gamma = 0.9
-actions = 10
+actions = 10 #acao 1,2,3,4,5,6,7,8,9
 reward = -1
 
 State=defaultdict(int)
@@ -32,10 +32,9 @@ def qlstate(board,state):
             state[i]=2
         else:
             state[i]=0
-            
-    #print State
+
     return state
-    #print State
+
     
 def resetQ():
     for l1 in range(2):
@@ -59,8 +58,6 @@ def getQ(state, action):
 
 def chooseaction(state):	
 	temp=-1000
-    
-        #print QL
 
         if (random.random() < epsilon):
             ac=int(random.uniform(1,9))
@@ -143,6 +140,15 @@ def gravaQ(Qbo):
     
 
         
+    adicionar.close()
+    
+def Resultado(trial,jogada):
+    arquivo = open("Resultado.txt","a")
+    s1=str(trial)
+    s2=str(jogada)
+    arquivo.write(s1)
+    arquivo.write(s2)
+    arquivo.write('\n')
     adicionar.close()
     
     
@@ -343,14 +349,14 @@ while trials<Maxtrials:
                 #print    vstatefinal
     
                 if isWinner(theBoard, playerLetter):
-                    reward=100
+                    reward=100 #ganhou ganha 100
                     QL_update(vstateinicial,vstatefinal,reward,acao)
                     drawBoard(theBoard)
                     print('Hooray! You have won the game!')
                     gameIsPlaying = False
                 else:
                     if isBoardFull(theBoard):
-                        reward=100
+                        reward=0 #so conta se ganhar
                         QL_update(vstateinicial,vstatefinal,reward,acao)
                         drawBoard(theBoard)
                         print('The game is a tie!')
@@ -366,13 +372,13 @@ while trials<Maxtrials:
     
                 if isWinner(theBoard, computerLetter):
                     #drawBoard(theBoard)
-                    reward=-100
+                    reward=-100 #perdeu perde 100
                     QL_update(vstateinicial,vstatefinal,reward,acao)
                     print('The computer has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
                     if isBoardFull(theBoard):
-                        reward=-100
+                        reward=0 #empatar nao conta
                         QL_update(vstateinicial,vstatefinal,reward,acao)
                         #drawBoard(theBoard)
                         print('The game is a tie!')
@@ -383,6 +389,8 @@ while trials<Maxtrials:
         if not playAgain():
             break
         elif jogadas>MAXjogadas:
+            trials=trials+1
+            jogadas=0
             break
         else:
             jogadas=jogadas+1
